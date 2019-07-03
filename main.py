@@ -18,7 +18,7 @@ parsing_targets = [0, 150, 300, 435, 570, 705, 840, 945, len(mice.target)]
 parsing_groups = ['c-CS-m', 'c-SC-m', 'c-CS-s', 'c-SC-s', 't-CS-m', 't-SC-m', 't-CS-s', 't-SC-s']
 
 def Analysis_Choice(parsing_targets, parsing_groups):
-    group_name = input('Enter group code: ')
+    group_name = input('Enter mice group code name: ')
     i = parsing_groups.index(group_name)
     return i
 
