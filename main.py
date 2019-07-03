@@ -86,8 +86,8 @@ def Plot_Gaussian_Result(PCA_data, target, mean_accuracy, GNB_model, parsing_tar
     ax.scatter(PCA_data['PCA_1'], PCA_data['PCA_2'], c=sns.xkcd_palette(PCA_color))
     ax.scatter(x_new['test_1'], x_new['test_2'], c=sns.xkcd_palette(x_color), alpha=0.1)
     ax.text(-2, -2.5, 'Mean accuracy='+str(mean_accuracy), ha='center')
-    amber_patch = mpatches.Patch(color=sns.xkcd_rgb["light red"], label=target[0])
-    blue_patch = mpatches.Patch(color=sns.xkcd_rgb["charcoal"], label=target[-1])
+    amber_patch = mpatches.Patch(color=sns.xkcd_rgb["light red"], label=target.iloc[0])
+    blue_patch = mpatches.Patch(color=sns.xkcd_rgb["charcoal"], label=target.iloc[-1])
     plt.legend(handles=[amber_patch, blue_patch], loc='lower right')
     plt.show()
 
