@@ -1,4 +1,4 @@
-# Machine_Learning_Algorithms_Applied_to_Mice_Protein_Data
+# Machine_Learning_Applied_to_Mice_Protein_Data
 
 Higuera et al. (2015) applied machine learning techniques to control and Down Syndrome (DS) mice models to determine which of the 77 proteins of interest played a more important role in learning and memory deficits associated with DS.
 
