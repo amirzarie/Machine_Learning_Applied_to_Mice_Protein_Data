@@ -8,6 +8,10 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import matplotlib.patches as mpatches
+from sklearn.svm import SVC
+from sklearn.utils import resample
+from sklearn.model_selection import validation_curve
+from sklearn.model_selection import GridSearchCV
 sns.set()
 
 column_names = "DYRK1A_N	ITSN1_N	BDNF_N	NR1_N	NR2A_N	pAKT_N	pBRAF_N	pCAMKII_N	pCREB_N	pELK_N	pERK_N	pJNK_N	PKCA_N	pMEK_N	pNR1_N	pNR2A_N	pNR2B_N	pPKCAB_N	pRSK_N	AKT_N	BRAF_N	CAMKII_N	CREB_N	ELK_N	ERK_N	GSK3B_N	JNK_N	MEK_N	TRKA_N	RSK_N	APP_N	Bcatenin_N	SOD1_N	MTOR_N	P38_N	pMTOR_N	DSCR1_N	AMPKA_N	NR2B_N	pNUMB_N	RAPTOR_N	TIAM1_N	pP70S6_N	NUMB_N	P70S6_N	pGSK3B_N	pPKCG_N	CDK5_N	S6_N	ADARB1_N	AcetylH3K9_N	RRP1_N	BAX_N	ARC_N	ERBB4_N	nNOS_N	Tau_N	GFAP_N	GluR3_N	GluR4_N	IL1B_N	P3525_N	pCASP9_N	PSD95_N	SNCA_N	Ubiquitin_N	pGSK3B_Tyr216_N	SHH_N	BAD_N	BCL2_N	pS6_N	pCFOS_N	SYP_N	H3AcK18_N	EGR1_N	H3MeK4_N	CaNA_N"
@@ -18,7 +22,7 @@ parsing_targets = [0, 150, 300, 435, 570, 705, 840, 945, len(mice.target)]
 parsing_groups = ['c-CS-m', 'c-SC-m', 'c-CS-s', 'c-SC-s', 't-CS-m', 't-SC-m', 't-CS-s', 't-SC-s']
 
 def Analysis_Choice(parsing_targets, parsing_groups):
-    group_name = input('Enter mice group code name: ')
+    group_name = input('Enter group code: ')
     i = parsing_groups.index(group_name)
     return i
 
@@ -57,7 +61,7 @@ def GaussianNA_Modeling_of_PCAs(PCA_data, target):
     GNB_model = GaussianNB()
     accuracy_list = []
     for i in range(100):
-        X_train, X_test, y_train, y_test = train_test_split(PCA_data, target, test_size=0.20)
+        X_train, X_test, y_train, y_test = train_test_split(PCA_data, target, test_size=0.10)
         GNB_model.fit(X_train, y_train)
         y_pred = GNB_model.predict(X_test)
         accuracy_list.append(np.round(accuracy_score(y_test, y_pred), decimals=2))
@@ -92,12 +96,30 @@ def Plot_Gaussian_Result(PCA_data, target, mean_accuracy, GNB_model, parsing_tar
     plt.show()
 
 
+def support_vector_classifier_validation(PCA_data, target):
+    C_range = np.arange(0.01, 5, 0.1)
+    train_score, val_score = validation_curve(SVC(kernel='rbf', gamma='auto'), PCA_data, target, param_name='C',
+                                              param_range=C_range, cv=5)
+
+    plt.figure(figsize=(9, 6))
+    plt.plot(C_range, np.median(train_score, 1), color='b', label='Training score')
+    plt.plot(C_range, np.median(val_score, 1), color='r', label='Validation score')
+    plt.title('Training and Validation Scores of SVC with Different C Hyperparameter Values for c-CS-s & c-SC-s Groups')
+    plt.xlabel('Range of C (softening) hyperparameter values for SVC')
+    plt.ylabel('Accuracy score')
+    plt.legend(loc='lower right')
+    plt.show()
+
+    print(f"The optimal C parameter based on validation score is: {np.round(np.amax(np.median(val_score, 1)), 3)*100}%")
+    return
+
+
 data, target, i, ii = Combined_Data(parsing_targets, parsing_groups, mice, column_names)
 data = replace_nan_with_mean(data, parsing_targets, i, ii)
 PCA_data, PCA_model = PCA_code(data)
 mean_accuracy, GNB_model = GaussianNA_Modeling_of_PCAs(PCA_data, target)
+support_vector_classifier_validation(PCA_data, target)
 Plot_Gaussian_Result(PCA_data, target, mean_accuracy, GNB_model, parsing_targets, parsing_groups, i, ii)
-
 loading_scores = pd.DataFrame(PCA_model.components_.T, index=column_names, columns=['PCA_1', 'PCA_2'])
 print(loading_scores.sort_values('PCA_1', ascending=False)[:5])
 print(loading_scores.sort_values('PCA_2', ascending=False)[:5])
