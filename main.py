@@ -1,3 +1,5 @@
+# Main code!
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -16,6 +18,7 @@ import random
 import copy
 # from sklearn.utils import resample (this is used for bootstrapping).
 # from sklearn.model_selection import GridSearchCV (this is used to do grid search to find the optimal hyperparameters).
+
 
 sns.set()
 
